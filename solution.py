@@ -182,7 +182,10 @@ if __name__ == '__main__':
                             'B5': '1', 'B6': '8', 'B7': '27', 'E9': '2', 'B1': '9', 'B2': '5', 'B3': '6', 'D6': '279',
                             'D7': '34', 'D4': '237', 'D5': '347', 'B8': '3', 'B9': '4', 'D1': '5'}
 
-    print(naked_twins(before_naked_twins_1))
+    print('Before')
+    display(before_naked_twins_1)
+    print('After')
+    display(naked_twins(before_naked_twins_1))
 
     #display(solve(diag_sudoku_grid))
 
