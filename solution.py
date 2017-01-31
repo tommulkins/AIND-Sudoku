@@ -35,19 +35,32 @@ def naked_twins(values):
     Returns:
         the values dictionary with the naked twins eliminated from peers.
     """
-    naked_twins_boxes = {}
-    # Find all instances of naked twins
+    naked_twins_boxes_cols = {} # Store naked twins belonging to 1 column
+    naked_twins_boxes_rows = {} # Store naked twins belonging to 1 row
+    # Find all instances of naked twins, where value of box is length of 2 and a match is found in its row or column
     for box, value in values.items():
         if len(value) == 2:
-            for peer in peers[box]:
-                if peer not in naked_twins_boxes and value == values[peer]:
-                    naked_twins_boxes[peer] = value
+            for peer in units[box][1]:
+                if peer != box and value == values[peer]:
+                    naked_twins_boxes_cols[box] = value
+                    naked_twins_boxes_cols[peer] = value
+            for peer in units[box][0]:
+                if peer != box and value == values[peer]:
+                    naked_twins_boxes_rows[box] = value
+                    naked_twins_boxes_rows[peer] = value
 
     # Eliminate the naked twins as possibilities for their peers
-    for box, value in naked_twins_boxes.items():
+    for box, value in naked_twins_boxes_cols.items(): # Eliminate each digit from column
         for digit in value:
-            for peer in peers[box]:
-                if peer not in naked_twins_boxes and digit in values[peer] and len(values[peer]) > 1:
+            for peer in units[box][1]:
+                if peer not in naked_twins_boxes_cols and digit in values[peer] and len(values[peer]) > 1:
+                    values[peer] = values[peer].replace(digit,'')
+                    assign_value(values, peer, values[peer])
+
+    for box, value in naked_twins_boxes_rows.items(): # Eliminate each digit from row
+        for digit in value:
+            for peer in units[box][0]:
+                if peer not in naked_twins_boxes_rows and digit in values[peer] and len(values[peer]) > 1:
                     values[peer] = values[peer].replace(digit,'')
                     assign_value(values, peer, values[peer])
 
@@ -104,7 +117,6 @@ def eliminate(values):
 
 def only_choice(values):
     new_values = values.copy()  # note: do not modify original values
-    # Solution from Udacity example.  My example was unable to give same output due to the unordered nature of dicts.
     for unit in unitlist:
         for digit in '123456789':
             dplaces = [box for box in unit if digit in values[box]]
@@ -121,8 +133,8 @@ def reduce_puzzle(values):
         solved_values_before = len([box for box in values.keys() if len(values[box]) == 1])
 
         values = eliminate(values) # First pass through eliminate strategy
-        #values = naked_twins(values) # Next attempt naked twins strategy
         values = only_choice(values) # Next attempt only_choice strategy
+        values = naked_twins(values) # Next attempt naked twins strategy
         # Check how many boxes have a determined value, to compare
         solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
         # If no new values were added, stop the loop.
@@ -170,28 +182,11 @@ def solve(grid):
 if __name__ == '__main__':
     diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
 
-    before_naked_twins_1 = {'I6': '4', 'H9': '3', 'I2': '6', 'E8': '1', 'H3': '5', 'H7': '8', 'I7': '1', 'I4': '8',
-                            'H5': '6', 'F9': '7', 'G7': '6', 'G6': '3', 'G5': '2', 'E1': '8', 'G3': '1', 'G2': '8',
-                            'G1': '7', 'I1': '23', 'C8': '5', 'I3': '23', 'E5': '347', 'I5': '5', 'C9': '1', 'G9': '5',
-                            'G8': '4', 'A1': '1', 'A3': '4', 'A2': '237', 'A5': '9', 'A4': '2357', 'A7': '27',
-                            'A6': '257', 'C3': '8', 'C2': '237', 'C1': '23', 'E6': '579', 'C7': '9', 'C6': '6',
-                            'C5': '37', 'C4': '4', 'I9': '9', 'D8': '8', 'I8': '7', 'E4': '6', 'D9': '6', 'H8': '2',
-                            'F6': '125', 'A9': '8', 'G4': '9', 'A8': '6', 'E7': '345', 'E3': '379', 'F1': '6',
-                            'F2': '4', 'F3': '23', 'F4': '1235', 'F5': '8', 'E2': '37', 'F7': '35', 'F8': '9',
-                            'D2': '1', 'H1': '4', 'H6': '17', 'H2': '9', 'H4': '17', 'D3': '2379', 'B4': '27',
-                            'B5': '1', 'B6': '8', 'B7': '27', 'E9': '2', 'B1': '9', 'B2': '5', 'B3': '6', 'D6': '279',
-                            'D7': '34', 'D4': '237', 'D5': '347', 'B8': '3', 'B9': '4', 'D1': '5'}
-
-    print('Before')
-    display(before_naked_twins_1)
-    print('After')
-    display(naked_twins(before_naked_twins_1))
-
-    #display(solve(diag_sudoku_grid))
+    display(solve(diag_sudoku_grid))
 
     try:
         from visualize import visualize_assignments
-        #visualize_assignments(assignments)
+        visualize_assignments(assignments)
 
     except SystemExit:
         pass

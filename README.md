@@ -3,7 +3,7 @@
 
 # Question 1 (Naked Twins)
 Q: How do we use constraint propagation to solve the naked twins problem?  
-A: *Student should provide answer here*
+A: When a row or column has a naked twin we know that those "twins" values are locked.  We use constraint propagation to iterate over each of the naked twins boxes found after using eliminate() and only_choice() strategies until the puzzle can no longer be reduced using all those strategies.
 
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?  
