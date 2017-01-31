@@ -7,7 +7,7 @@ A: When a row or column has a naked twin we know that those "twins" values are l
 
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?  
-A: *Student should provide answer here*
+A: A box located in a main diagonal (A1->I9 || A9<-I1) has that diagonal as a peer in addition to the peers of a conventional Soduku.  Include the diagonal peer to isolate a unique value from 1 thru 9.  *Important Note: A box located within a main diagonal only has the diagonal, such as top left to bottom right, as its peer and not the opposite diagonal.  The lone exception is box E5 which is the center point of the Soduku.
 
 ### Install
 

@@ -6,12 +6,35 @@ def cross(A, B):
     return [s + t for s in A for t in B]
     pass
 
+def create_left_diag_units(A, B):
+    diag_units = []
+    i = 0
+    # First, get diagonal units from top left to bottom right
+    for r in rows:
+        diag_units.append(r + cols[i])
+        i += 1
+    return diag_units
+
+def create_right_diag_units(A, B):
+    diag_units = []
+    i = 0
+    # Next, get diagonal units from top right to bottom left
+    i = 8
+    for r in rows:
+        if r + cols[i] not in diag_units: # Don't duplicate
+            diag_units.append(r + cols[i])
+        i -= 1
+    return diag_units
+
+
 boxes = cross(rows, cols)
 
+left_diag_units = [create_left_diag_units(rows, cols)] # Create top left to bottom right diagonal units based on rows, cols string
+right_diag_units = [create_right_diag_units(rows, cols)] # Create top right to bottom left diagonal units based on rows, cols string
 row_units = [cross(r, cols) for r in rows]
 column_units = [cross(rows, c) for c in cols]
 square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
-unitlist = row_units + column_units + square_units
+unitlist = row_units + column_units + square_units + left_diag_units + right_diag_units # Add diagonal units to unitlist
 units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
 peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
 
@@ -135,7 +158,8 @@ def reduce_puzzle(values):
         values = eliminate(values) # First pass through eliminate strategy
         values = only_choice(values) # Next attempt only_choice strategy
         values = naked_twins(values) # Next attempt naked twins strategy
-        # Check how many boxes have a determined value, to compare
+
+         # Check how many boxes have a determined value, to compare
         solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
         # If no new values were added, stop the loop.
         stalled = solved_values_before == solved_values_after
@@ -147,7 +171,7 @@ def reduce_puzzle(values):
     pass
 
 def search(values):
-    # First, reduce the puzzle using the previous function
+    # First, reduce the puzzle using the previous functions
     values = reduce_puzzle(values)
     if values is False:
         return False #Failed at reduce_puzzle
@@ -181,7 +205,6 @@ def solve(grid):
 
 if __name__ == '__main__':
     diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
-
     display(solve(diag_sudoku_grid))
 
     try:
